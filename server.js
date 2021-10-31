@@ -14,7 +14,7 @@ const app = express();
 const Obniz = require('obniz');
 const obniz = new Obniz("OBNIZ_ID");
 
-// 距離センサーも全体で使えるようにする
+// 距離センサーをプログラム全体で使えるようにする
 let hcsr04;
 
 obniz.onconnect = async function () {
@@ -30,11 +30,13 @@ app.post('/webhook', line.middleware(config), (req, res) => {
 
 const client = new line.Client(config);
 
+// LINE Botにメッセージを送ったら実行される関数
 async function handleEvent(event) {
   if (event.type !== 'message' || event.message.type !== 'text') {
     return Promise.resolve(null);
   }
 
+  // 距離を測る
   let distance = await hcsr04.measureWait();
   distance = Math.floor(distance);
   const text = distance + 'mmです';
